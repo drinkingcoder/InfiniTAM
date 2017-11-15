@@ -18,3 +18,9 @@ x64/
 
 # QtCreator CMake
 CMakeLists.txt.user*
+
+InfiniTAM/.cproject
+InfiniTAM/.idea/
+InfiniTAM/.project
+InfiniTAM/cmake-build-debug/
+InfiniTAM/doxygen-html/
