@@ -12,14 +12,14 @@ ITMSurfelSceneReconstructionEngine<TSurfel>::ITMSurfelSceneReconstructionEngine(
 : m_timestamp(0)
 {
   size_t pixelCount = depthImageSize.x * depthImageSize.y;
-  m_correspondenceMapMB = new ORUtils::MemoryBlock<unsigned int>(pixelCount, true, true);
-  m_mergeTargetMapMB = new ORUtils::MemoryBlock<unsigned int>(pixelCount, true, true);
-  m_newPointsMaskMB = new ORUtils::MemoryBlock<unsigned short>(pixelCount + 1, true, true);
-  m_newPointsPrefixSumMB = new ORUtils::MemoryBlock<unsigned int>(pixelCount + 1, true, true);
-  m_normalMapMB = new ORUtils::MemoryBlock<Vector3f>(pixelCount, true, true);
-  m_radiusMapMB = new ORUtils::MemoryBlock<float>(pixelCount, true, true);
-  m_surfelRemovalMaskMB = new ORUtils::MemoryBlock<unsigned int>(MAX_SURFEL_COUNT, true, true);
-  m_vertexMapMB =  new ORUtils::MemoryBlock<Vector4f>(pixelCount, true, true);
+  m_correspondenceMapMB = new ORUtils::MemoryManager<unsigned int>(pixelCount, true, true);
+  m_mergeTargetMapMB = new ORUtils::MemoryManager<unsigned int>(pixelCount, true, true);
+  m_newPointsMaskMB = new ORUtils::MemoryManager<unsigned short>(pixelCount + 1, true, true);
+  m_newPointsPrefixSumMB = new ORUtils::MemoryManager<unsigned int>(pixelCount + 1, true, true);
+  m_normalMapMB = new ORUtils::MemoryManager<Vector3f>(pixelCount, true, true);
+  m_radiusMapMB = new ORUtils::MemoryManager<float>(pixelCount, true, true);
+  m_surfelRemovalMaskMB = new ORUtils::MemoryManager<unsigned int>(MAX_SURFEL_COUNT, true, true);
+  m_vertexMapMB =  new ORUtils::MemoryManager<Vector4f>(pixelCount, true, true);
 
   // Make sure that the dummy element at the end of the new points mask is initialised properly.
   m_newPointsMaskMB->GetData(MEMORYDEVICE_CPU)[pixelCount] = 0;

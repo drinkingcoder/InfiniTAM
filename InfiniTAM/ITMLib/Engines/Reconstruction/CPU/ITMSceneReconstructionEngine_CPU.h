@@ -15,8 +15,8 @@ namespace ITMLib
 	class ITMSceneReconstructionEngine_CPU<TVoxel, ITMVoxelBlockHash> : public ITMSceneReconstructionEngine < TVoxel, ITMVoxelBlockHash >
 	{
 	protected:
-		ORUtils::MemoryBlock<unsigned char> *entriesAllocType;
-		ORUtils::MemoryBlock<Vector4s> *blockCoords;
+		ORUtils::MemoryManager<unsigned char> *entriesAllocType;
+		ORUtils::MemoryManager<Vector4s> *blockCoords;
 
 	public:
 		void ResetScene(ITMScene<TVoxel, ITMVoxelBlockHash> *scene);

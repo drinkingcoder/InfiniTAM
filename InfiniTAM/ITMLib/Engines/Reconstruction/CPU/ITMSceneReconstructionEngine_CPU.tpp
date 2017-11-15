@@ -10,8 +10,8 @@ template<class TVoxel>
 ITMSceneReconstructionEngine_CPU<TVoxel,ITMVoxelBlockHash>::ITMSceneReconstructionEngine_CPU(void) 
 {
 	int noTotalEntries = ITMVoxelBlockHash::noTotalEntries;
-	entriesAllocType = new ORUtils::MemoryBlock<unsigned char>(noTotalEntries, MEMORYDEVICE_CPU);
-	blockCoords = new ORUtils::MemoryBlock<Vector4s>(noTotalEntries, MEMORYDEVICE_CPU);
+	entriesAllocType = new ORUtils::MemoryManager<unsigned char>(noTotalEntries, MEMORYDEVICE_CPU);
+	blockCoords = new ORUtils::MemoryManager<Vector4s>(noTotalEntries, MEMORYDEVICE_CPU);
 }
 
 template<class TVoxel>

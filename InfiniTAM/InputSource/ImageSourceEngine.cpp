@@ -126,8 +126,8 @@ template <typename PathGenerator>
 void ImageFileReader<PathGenerator>::getImages(ITMUChar4Image *rgb, ITMShortImage *rawDepth)
 {
 	loadIntoCache();
-	rgb->SetFrom(cached_rgb, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
-	rawDepth->SetFrom(cached_depth, ORUtils::MemoryBlock<short>::CPU_TO_CPU);
+	rgb->SetFrom(cached_rgb, ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU);
+	rawDepth->SetFrom(cached_depth, ORUtils::MemoryManager<short>::CPU_TO_CPU);
 
 	++currentFrameNo;
 }
@@ -247,7 +247,7 @@ void RawFileReader::getImages(ITMUChar4Image *rgb, ITMShortImage *rawDepth)
 
 	if (cached_rgb != NULL)
 	{
-		rgb->SetFrom(cached_rgb, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+		rgb->SetFrom(cached_rgb, ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU);
 		delete cached_rgb;
 		cached_rgb = NULL;
 		bUsedCache = true;
@@ -255,7 +255,7 @@ void RawFileReader::getImages(ITMUChar4Image *rgb, ITMShortImage *rawDepth)
 
 	if (cached_depth != NULL)
 	{
-		rawDepth->SetFrom(cached_depth, ORUtils::MemoryBlock<short>::CPU_TO_CPU);
+		rawDepth->SetFrom(cached_depth, ORUtils::MemoryManager<short>::CPU_TO_CPU);
 		delete cached_depth;
 		cached_depth = NULL;
 		bUsedCache = true;
@@ -278,8 +278,8 @@ bool BlankImageGenerator::hasMoreImages(void) const
 
 void BlankImageGenerator::getImages(ITMUChar4Image *rgb, ITMShortImage *rawDepth)
 {
-	rgb->Clear();
-	rawDepth->Clear();
+	rgb->InitData();
+	rawDepth->InitData();
 }
 
 template class InputSource::ImageFileReader<ImageMaskPathGenerator>;

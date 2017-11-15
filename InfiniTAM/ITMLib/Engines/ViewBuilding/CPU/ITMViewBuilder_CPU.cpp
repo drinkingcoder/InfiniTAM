@@ -32,11 +32,11 @@ void ITMViewBuilder_CPU::UpdateView(ITMView **view_ptr, ITMUChar4Image *rgbImage
 	if (storePreviousImage)
 	{
 		if (!view->rgb_prev) view->rgb_prev = new ITMUChar4Image(rgbImage->noDims, true, false);
-		else view->rgb_prev->SetFrom(view->rgb, MemoryBlock<Vector4u>::CPU_TO_CPU);
+		else view->rgb_prev->SetFrom(view->rgb, MemoryManager<Vector4u>::CPU_TO_CPU);
 	}
 
-	view->rgb->SetFrom(rgbImage, MemoryBlock<Vector4u>::CPU_TO_CPU);
-	this->shortImage->SetFrom(rawDepthImage, MemoryBlock<short>::CPU_TO_CPU);
+	view->rgb->SetFrom(rgbImage, MemoryManager<Vector4u>::CPU_TO_CPU);
+	this->shortImage->SetFrom(rawDepthImage, MemoryManager<short>::CPU_TO_CPU);
 
 	switch (view->calib.disparityCalib.GetType())
 	{
@@ -58,7 +58,7 @@ void ITMViewBuilder_CPU::UpdateView(ITMView **view_ptr, ITMUChar4Image *rgbImage
 		this->DepthFiltering(this->floatImage, view->depth);
 		this->DepthFiltering(view->depth, this->floatImage);
 		this->DepthFiltering(this->floatImage, view->depth);
-		view->depth->SetFrom(this->floatImage, MemoryBlock<float>::CPU_TO_CPU);
+		view->depth->SetFrom(this->floatImage, MemoryManager<float>::CPU_TO_CPU);
 	}
 
 	if (modelSensorNoise)
@@ -119,7 +119,7 @@ void ITMViewBuilder_CPU::DepthFiltering(ITMFloatImage *image_out, const ITMFloat
 {
 	Vector2i imgSize = image_in->noDims;
 
-	image_out->Clear();
+	image_out->InitData();
 
 	float *imout = image_out->GetData(MEMORYDEVICE_CPU);
 	const float *imin = image_in->GetData(MEMORYDEVICE_CPU);

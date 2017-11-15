@@ -20,9 +20,9 @@ void IITMVisualisationEngine::DepthToUchar4(ITMUChar4Image *dst, const ITMFloatI
 {
 	Vector4u *dest = dst->GetData(MEMORYDEVICE_CPU);
 	const float *source = src->GetData(MEMORYDEVICE_CPU);
-	int dataSize = static_cast<int>(dst->dataSize);
+	int m_data_size = static_cast<int>(dst->m_data_size);
 
-	memset(dst->GetData(MEMORYDEVICE_CPU), 0, dataSize * 4);
+	memset(dst->GetData(MEMORYDEVICE_CPU), 0, m_data_size * 4);
 
 	Vector4u *destUC4;
 	float lims[2], scale;
@@ -30,7 +30,7 @@ void IITMVisualisationEngine::DepthToUchar4(ITMUChar4Image *dst, const ITMFloatI
 	destUC4 = (Vector4u*)dest;
 	lims[0] = 100000.0f; lims[1] = -100000.0f;
 
-	for (int idx = 0; idx < dataSize; idx++)
+	for (int idx = 0; idx < m_data_size; idx++)
 	{
 		float sourceVal = source[idx];
 		if (sourceVal > 0.0f) { lims[0] = MIN(lims[0], sourceVal); lims[1] = MAX(lims[1], sourceVal); }
@@ -40,7 +40,7 @@ void IITMVisualisationEngine::DepthToUchar4(ITMUChar4Image *dst, const ITMFloatI
 
 	if (lims[0] == lims[1]) return;
 
-	for (int idx = 0; idx < dataSize; idx++)
+	for (int idx = 0; idx < m_data_size; idx++)
 	{
 		float sourceVal = source[idx];
 
@@ -60,11 +60,11 @@ void IITMVisualisationEngine::NormalToUchar4(ITMUChar4Image *dst, const ITMFloat
 {
 	Vector4u *dest = dst->GetData(MEMORYDEVICE_CPU);
 	const Vector4f *source = src->GetData(MEMORYDEVICE_CPU);
-	int dataSize = static_cast<int>(dst->dataSize);
+	int m_data_size = static_cast<int>(dst->m_data_size);
 
-	memset(dst->GetData(MEMORYDEVICE_CPU), 0, dataSize * 4);
+	memset(dst->GetData(MEMORYDEVICE_CPU), 0, m_data_size * 4);
 	{
-		for (int idx = 0; idx < dataSize; idx++)
+		for (int idx = 0; idx < m_data_size; idx++)
 		{
 			Vector4f sourceVal = source[idx];
 			if (sourceVal.w >= 0.0f)
@@ -82,15 +82,15 @@ void IITMVisualisationEngine::WeightToUchar4(ITMUChar4Image *dst, const ITMFloat
 {
 	Vector4u *dest = dst->GetData(MEMORYDEVICE_CPU);
 	const float *source = src->GetData(MEMORYDEVICE_CPU);
-	int dataSize = static_cast<int>(dst->dataSize);
+	int m_data_size = static_cast<int>(dst->m_data_size);
 
 	float mindepth = 1000;
-	for (size_t i = 0; i < src->dataSize; i++)
+	for (size_t i = 0; i < src->m_data_size; i++)
 		if (source[i]>0) mindepth = MIN(mindepth, source[i]);
 
-	memset(dst->GetData(MEMORYDEVICE_CPU), 0, dataSize * 4);
+	memset(dst->GetData(MEMORYDEVICE_CPU), 0, m_data_size * 4);
 	{
-		for (int idx = 0; idx < dataSize; idx++)
+		for (int idx = 0; idx < m_data_size; idx++)
 		{
 			float sourceVal = source[idx];
 			if (sourceVal>0)

@@ -22,7 +22,7 @@ void ITMSurfelSceneReconstructionEngine_CPU<TSurfel>::AddNewSurfels(ITMSurfelSce
   // Calculate the prefix sum of the new points mask.
   const unsigned short *newPointsMask = this->m_newPointsMaskMB->GetData(MEMORYDEVICE_CPU);
   unsigned int *newPointsPrefixSum = this->m_newPointsPrefixSumMB->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(this->m_newPointsMaskMB->dataSize - 1);
+  const int pixelCount = static_cast<int>(this->m_newPointsMaskMB->m_data_size - 1);
 
   newPointsPrefixSum[0] = 0;
   for(int i = 1; i <= pixelCount; ++i)
@@ -69,7 +69,7 @@ void ITMSurfelSceneReconstructionEngine_CPU<TSurfel>::FindCorrespondingSurfels(c
   const Matrix4f& invT = trackingState->pose_d->GetM();
   unsigned short *newPointsMask = this->m_newPointsMaskMB->GetData(MEMORYDEVICE_CPU);
   const Vector3f *normalMap = this->m_normalMapMB->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(view->depth->dataSize);
+  const int pixelCount = static_cast<int>(view->depth->m_data_size);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
   const TSurfel *surfels = scene->GetSurfels()->GetData(MEMORYDEVICE_CPU);
 
@@ -93,7 +93,7 @@ void ITMSurfelSceneReconstructionEngine_CPU<TSurfel>::FuseMatchedPoints(ITMSurfe
   const unsigned int *correspondenceMap = this->m_correspondenceMapMB->GetData(MEMORYDEVICE_CPU);
   const Matrix4f& depthToRGB = view->calib.trafo_rgb_to_depth.calib_inv;
   const Vector3f *normalMap = this->m_normalMapMB->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(view->depth->dataSize);
+  const int pixelCount = static_cast<int>(view->depth->m_data_size);
   const Vector4f& projParamsRGB = view->calib.intrinsics_rgb.projectionParamsSimple.all;
   const float *radiusMap = this->m_radiusMapMB->GetData(MEMORYDEVICE_CPU);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
@@ -160,7 +160,7 @@ void ITMSurfelSceneReconstructionEngine_CPU<TSurfel>::MergeSimilarSurfels(ITMSur
   const int indexImageHeight = renderState->GetIndexImage()->noDims.y;
   const int indexImageWidth = renderState->GetIndexImage()->noDims.x;
   unsigned int *mergeTargetMap = this->m_mergeTargetMapMB->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(renderState->GetIndexImage()->dataSize);
+  const int pixelCount = static_cast<int>(renderState->GetIndexImage()->m_data_size);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
   TSurfel *surfels = scene->GetSurfels()->GetData(MEMORYDEVICE_CPU);
   unsigned int *surfelRemovalMask = this->m_surfelRemovalMaskMB->GetData(MEMORYDEVICE_CPU);
@@ -213,7 +213,7 @@ void ITMSurfelSceneReconstructionEngine_CPU<TSurfel>::PreprocessDepthMap(const I
   const int height = view->depth->noDims.y;
   const ITMIntrinsics& intrinsics = view->calib.intrinsics_d;
   Vector3f *normalMap = this->m_normalMapMB->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(view->depth->dataSize);
+  const int pixelCount = static_cast<int>(view->depth->m_data_size);
   float *radiusMap = this->m_radiusMapMB->GetData(MEMORYDEVICE_CPU);
   Vector4f *vertexMap = this->m_vertexMapMB->GetData(MEMORYDEVICE_CPU);
   const int width = view->depth->noDims.x;

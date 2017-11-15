@@ -25,9 +25,9 @@ namespace ORUtils {
     public:
         enum MemoryCopyDirection {
             CPU_TO_CPU,
-            CPU_TO_GPU,
-            GPU_TO_CPU,
-            GPU_TO_GPU
+            CPU_TO_CUDA,
+            CUDA_TO_CPU,
+            CUDA_TO_CUDA
         };
 
         /// basic class methods
@@ -35,7 +35,7 @@ namespace ORUtils {
                 m_is_allocated_cpu(false),
                 m_is_allocated_gpu(false) {
             Allocate(data_size, allocate_cpu, allocate_gpu);
-            Clear();
+            InitData();
         }
 
         explicit MemoryManager(size_t data_size, MemoryDeviceType memory_type):
@@ -52,7 +52,7 @@ namespace ORUtils {
             InitData();
         }
 
-        virtual ~MemoryBlock() {
+        virtual ~MemoryManager() {
             Free();
         }
 
@@ -61,32 +61,29 @@ namespace ORUtils {
         MemoryManager& operator=(const MemoryManager&) = delete;
 
         /// basic container method
-        virtual void Allocate(size_t data_size, bool allocate_cpu, bool allocate_gpu);
-        virtual void Free();
-        virtual void InitData(unsigned char default_value = 0);
-        virtual void Swap(MemoryManager<T>& rhs);
-        virtual void Resize(size_t data_size, bool reallocation = true);
-        virtual void SetData(const MemoryManager<T> *source, MemoryCopyDirection copy_direction);
-        virtual T GetElement(int idx, MemoryDeviceType memory_type) const; ///< get an individual element from cpu or gpu.
+        void Allocate(size_t data_size, bool allocate_cpu, bool allocate_gpu);
+        void Free();
+        void InitData(unsigned char default_value = 0);
+        void Swap(MemoryManager<T>& rhs);
+        void Resize(size_t data_size, bool reallocation = true);
+        void SetData(const MemoryManager<T> *source, MemoryCopyDirection copy_direction);
+        T GetElement(int idx, MemoryDeviceType memory_type) const; ///< get an individual element from cpu or gpu.
 
         /// data synchronization between cpu and gpu
-        virtual void CopyDataFromDeviceToHost() const;
-        virtual void CopyDataFromHostToDevice() const;
+        void UpdateDeviceFromHost() const;
+        void UpdateHostFromDevice() const;
 
         /// property retrieval
-        virtual size_t GetDataSize() {
-            return m_data_size;
-        }
+        size_t m_data_size;
 
-        virtual T* GetData(MemoryDeviceType memory_type);
-        virtual const T* GetData(MemoryDeviceType memory_type) const;
+        T* GetData(MemoryDeviceType memory_type);
+        const T* GetData(MemoryDeviceType memory_type) const;
 
 
     protected:
         bool m_is_allocated_cpu, m_is_allocated_gpu;
         T *m_data_cpu;
         T *m_data_gpu;
-        size_t m_data_size;
     private:
     };
 
@@ -119,7 +116,11 @@ namespace ORUtils {
             if(data_size == 0) {
                 m_data_cpu = NULL;
             } else {
-               m_data_cpu = new T[m_data_size];
+                if(allocate_gpu) { ///< allocate pinned memory by cudaMallocHost when we should allocate both cpu & gpu.
+                    ORcudaSafeCall(cudaMallocHost(reinterpret_cast<void**>(&m_data_cpu), data_size * sizeof(T)));
+                } else {
+                    m_data_cpu = new T[m_data_size];
+                }
             }
             m_is_allocated_cpu = true;
         }
@@ -127,7 +128,7 @@ namespace ORUtils {
             if(data_size == 0) {
                 m_data_gpu = NULL;
             } else {
-                ORcudaSafeCall(cudaMalloc(static_cast<void*>(&m_data_gpu), data_size * sizeof(T)));
+                ORcudaSafeCall(cudaMalloc(reinterpret_cast<void**>(&m_data_gpu), data_size * sizeof(T)));
             }
             m_is_allocated_gpu = true;
         }
@@ -135,22 +136,24 @@ namespace ORUtils {
 
     template <typename T>
     void MemoryManager<T>::Free() {
-        if(m_is_allocated_cpu) {
-            if(m_data_cpu != NULL) {
+        if(m_is_allocated_cpu && m_data_cpu != NULL) {
+            if(m_is_allocated_gpu) {    ///< free pinned memory by cudaFreeHost
+                ORcudaSafeCall(cudaFreeHost(m_data_cpu));
+            } else {
                 delete[] m_data_cpu;
             }
             m_is_allocated_cpu = false;
         }
         if(m_is_allocated_gpu) {
             if(m_data_gpu != NULL) {
-                ORcudaSafeCall(cudaFree(m_data_cpu));
+                ORcudaSafeCall(cudaFree(m_data_gpu));
             }
             m_is_allocated_gpu = false;
         }
     }
 
     template <typename T>
-    void MemoryManager<T>::InitData(unsigned char default_value = 0) {
+    void MemoryManager<T>::InitData(unsigned char default_value) {
         if(m_is_allocated_cpu) {
             memset(m_data_cpu, default_value, m_data_size * sizeof(T));
         }
@@ -180,6 +183,7 @@ namespace ORUtils {
             Free();
             Allocate(data_size, allocate_cpu, allocate_gpu);
         }
+        m_data_size = data_size;
     }
 
 
@@ -190,14 +194,15 @@ namespace ORUtils {
             case CPU_TO_CPU:
                 memcpy(this->m_data_cpu, source->m_data_cpu, m_data_size * sizeof(T));
                 break;
-            case CPU_TO_GPU:
-                ORcudaSafeCall(cudaMemcpyAsync(m_data_gpu, source->m_data_cpu, source->dataSize * sizeof(T), cudaMemcpyHostToDevice));
+            case CPU_TO_CUDA:
+                ORcudaSafeCall(cudaMemcpyAsync(m_data_gpu, source->m_data_cpu, source->m_data_size* sizeof(T), cudaMemcpyHostToDevice));
                 break;
-            case GPU_TO_CPU:
-                ORcudaSafeCall(cudaMemcpyAsync(m_data_cpu, source->m_data_gpu, source->dataSize * sizeof(T), cudaMemcpyDeviceToHost));
+            case CUDA_TO_CPU:
+                /// not async here.
+                ORcudaSafeCall(cudaMemcpy(m_data_cpu, source->m_data_gpu, source->m_data_size * sizeof(T), cudaMemcpyDeviceToHost));
                 break;
-            case GPU_TO_GPU:
-                ORcudaSafeCall(cudaMemcpyAsync(m_data_gpu, source->m_data_gpu, source->dataSize * sizeof(T), cudaMemcpyDeviceToDevice));
+            case CUDA_TO_CUDA:
+                ORcudaSafeCall(cudaMemcpyAsync(m_data_gpu, source->m_data_gpu, source->m_data_size * sizeof(T), cudaMemcpyDeviceToDevice));
                 break;
             default:
                 break;
@@ -211,7 +216,7 @@ namespace ORUtils {
                 return m_data_cpu[idx];
             case MEMORYDEVICE_CUDA:
                 T result;
-                ORcudaSafeCall(cudaMemcpy(&result, this->data_cuda + n, sizeof(T), cudaMemcpyDeviceToHost));
+                ORcudaSafeCall(cudaMemcpy(&result, m_data_gpu + idx, sizeof(T), cudaMemcpyDeviceToHost));
                 return result;
             default:
                 throw std::runtime_error("Invalid memory type.");
@@ -219,13 +224,17 @@ namespace ORUtils {
     }
 
     template <typename T>
-    void MemoryManager<T>::CopyDataFromDeviceToHost() const {
-
+    void MemoryManager<T>::UpdateDeviceFromHost() const {
+        if(m_is_allocated_cpu && m_is_allocated_gpu) {
+            ORcudaSafeCall(cudaMemcpy(m_data_gpu, m_data_cpu, m_data_size * sizeof(T), cudaMemcpyHostToDevice));
+        }
     }
 
     template <typename T>
-    void MemoryManager<T>::CopyDataFromHostToDevice() const {
-
+    void MemoryManager<T>::UpdateHostFromDevice() const {
+        if(m_is_allocated_cpu && m_is_allocated_gpu) {
+            ORcudaSafeCall(cudaMemcpy(m_data_cpu, m_data_gpu, m_data_size * sizeof(T), cudaMemcpyDeviceToHost));
+        }
     }
 }
 

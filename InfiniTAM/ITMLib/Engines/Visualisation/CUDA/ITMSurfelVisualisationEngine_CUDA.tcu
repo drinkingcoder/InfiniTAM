@@ -177,7 +177,7 @@ template <typename TSurfel>
 void ITMSurfelVisualisationEngine_CUDA<TSurfel>::CreateICPMaps(const ITMSurfelScene<TSurfel> *scene, const ITMSurfelRenderState *renderState, ITMTrackingState *trackingState) const
 {
   const Matrix4f& invT = trackingState->pose_d->GetM();
-  const int pixelCount = static_cast<int>(renderState->GetIndexImage()->dataSize);
+  const int pixelCount = static_cast<int>(renderState->GetIndexImage()->m_data_size);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
 
   int threadsPerBlock = 256;
@@ -202,7 +202,7 @@ void ITMSurfelVisualisationEngine_CUDA<TSurfel>::RenderDepthImage(const ITMSurfe
 {
   const Vector3f cameraPosition = pose->GetT();
   float *outputImagePtr = outputImage->GetData(MEMORYDEVICE_CUDA);
-  const int pixelCount = static_cast<int>(outputImage->dataSize);
+  const int pixelCount = static_cast<int>(outputImage->m_data_size);
   const unsigned int *surfelIndexImagePtr = renderState->GetIndexImage()->GetData(MEMORYDEVICE_CUDA);
   const TSurfel *surfels = scene->GetSurfels()->GetData(MEMORYDEVICE_CUDA);
 
@@ -227,7 +227,7 @@ void ITMSurfelVisualisationEngine_CUDA<TSurfel>::RenderImage(const ITMSurfelScen
   if(type == Base::RENDER_COLOUR && !TSurfel::hasColourInformation) type = Base::RENDER_LAMBERTIAN;
 
   Vector4u *outputImagePtr = outputImage->GetData(MEMORYDEVICE_CUDA);
-  const int pixelCount = static_cast<int>(outputImage->dataSize);
+  const int pixelCount = static_cast<int>(outputImage->m_data_size);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
   const unsigned int *surfelIndexImagePtr = renderState->GetIndexImage()->GetData(MEMORYDEVICE_CUDA);
   const TSurfel *surfels = scene->GetSurfels()->GetData(MEMORYDEVICE_CUDA);

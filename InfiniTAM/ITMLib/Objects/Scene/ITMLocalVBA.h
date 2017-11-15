@@ -15,8 +15,8 @@ namespace ITMLib
 	class ITMLocalVBA
 	{
 	private:
-		ORUtils::MemoryBlock<TVoxel> *voxelBlocks;
-		ORUtils::MemoryBlock<int> *allocationList;
+		ORUtils::MemoryManager<TVoxel> *voxelBlocks;
+		ORUtils::MemoryManager<int> *allocationList;
 
 		MemoryDeviceType memoryType;
 
@@ -69,8 +69,8 @@ namespace ITMLib
 
 			allocatedSize = noBlocks * blockSize;
 
-			voxelBlocks = new ORUtils::MemoryBlock<TVoxel>(allocatedSize, memoryType);
-			allocationList = new ORUtils::MemoryBlock<int>(noBlocks, memoryType);
+			voxelBlocks = new ORUtils::MemoryManager<TVoxel>(allocatedSize, memoryType);
+			allocationList = new ORUtils::MemoryManager<int>(noBlocks, memoryType);
 		}
 
 		~ITMLocalVBA(void)

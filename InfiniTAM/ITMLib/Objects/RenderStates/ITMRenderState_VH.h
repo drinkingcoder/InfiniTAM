@@ -22,13 +22,13 @@ namespace ITMLib
 		/** A list of "visible entries", that are currently
 		being processed by the tracker.
 		*/
-		ORUtils::MemoryBlock<int> *visibleEntryIDs;
+		ORUtils::MemoryManager<int> *visibleEntryIDs;
 
 		/** A list of "visible entries", that are
 		currently being processed by integration
 		and tracker.
 		*/
-		ORUtils::MemoryBlock<uchar> *entriesVisibleType;
+		ORUtils::MemoryManager<uchar> *entriesVisibleType;
            
 	public:
 		/** Number of entries in the live list. */
@@ -39,8 +39,8 @@ namespace ITMLib
 		{
 			this->memoryType = memoryType;
 
-			visibleEntryIDs = new ORUtils::MemoryBlock<int>(SDF_LOCAL_BLOCK_NUM, memoryType);
-			entriesVisibleType = new ORUtils::MemoryBlock<uchar>(noTotalEntries, memoryType);
+			visibleEntryIDs = new ORUtils::MemoryManager<int>(SDF_LOCAL_BLOCK_NUM, memoryType);
+			entriesVisibleType = new ORUtils::MemoryManager<uchar>(noTotalEntries, memoryType);
 
 			noVisibleEntries = 0;
 		}

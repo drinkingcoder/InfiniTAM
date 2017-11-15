@@ -18,29 +18,29 @@ namespace ITMLib
     //#################### PROTECTED VARIABLES ####################
   protected:
     /** A map containing the indices of the surfels (if any) in the scene to which different points in the vertex map correspond. */
-    ORUtils::MemoryBlock<unsigned int> *m_correspondenceMapMB;
+    ORUtils::MemoryManager<unsigned int> *m_correspondenceMapMB;
 
     /**
      * A map representing the targets of the surfel merges that should be performed. Each element is a raster position in the index image,
      * e.g. if the merge target of the surfel specified at raster position 51 in the index image is 7, that means it should be merged into
      * the surfel specified at raster position 7 in the index image.
      */
-    ORUtils::MemoryBlock<unsigned int> *m_mergeTargetMapMB;
+    ORUtils::MemoryManager<unsigned int> *m_mergeTargetMapMB;
 
     /** A mask whose values denote whether the corresponding points in the vertex map need to be added to the scene as new points. */
-    ORUtils::MemoryBlock<unsigned short> *m_newPointsMaskMB;
+    ORUtils::MemoryManager<unsigned short> *m_newPointsMaskMB;
 
     /** A prefix sum of the new points mask whose values denote the offsets in a new surfels chunk at which new points should be written. */
-    ORUtils::MemoryBlock<unsigned int> *m_newPointsPrefixSumMB;
+    ORUtils::MemoryManager<unsigned int> *m_newPointsPrefixSumMB;
 
     /** The normal map corresponding to the live depth image. */
-    ORUtils::MemoryBlock<Vector3f> *m_normalMapMB;
+    ORUtils::MemoryManager<Vector3f> *m_normalMapMB;
 
     /** The radius map corresponding to the live depth image. */
-    ORUtils::MemoryBlock<float> *m_radiusMapMB;
+    ORUtils::MemoryManager<float> *m_radiusMapMB;
 
     /** A mask whose values denote whether the corresponding surfels in the scene should be removed. */
-    ORUtils::MemoryBlock<unsigned int> *m_surfelRemovalMaskMB;
+    ORUtils::MemoryManager<unsigned int> *m_surfelRemovalMaskMB;
 
     /** The current timestamp (i.e. frame number). */
     int m_timestamp;
@@ -49,7 +49,7 @@ namespace ITMLib
      * The vertex map corresponding to the live depth image (obtained by back-projecting the points in the depth image).
      * The w component of each vertex is set to 1 if the corresponding depth pixel was valid, and -1 otherwise.
      */
-    ORUtils::MemoryBlock<Vector4f> *m_vertexMapMB;
+    ORUtils::MemoryManager<Vector4f> *m_vertexMapMB;
 
     //#################### CONSTRUCTORS ####################
   protected:

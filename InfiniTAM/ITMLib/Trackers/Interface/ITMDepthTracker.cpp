@@ -177,7 +177,7 @@ void ITMDepthTracker::ApplyDelta(const Matrix4f & para_old, const float *delta, 
 
 void ITMDepthTracker::UpdatePoseQuality(int noValidPoints_old, float *hessian_good, float f_old)
 {
-	size_t noTotalPoints = viewHierarchy->GetLevel(0)->data->dataSize;
+	size_t noTotalPoints = viewHierarchy->GetLevel(0)->data->m_data_size;
 
 	int noValidPointsMax = lowLevelEngine->CountValidDepths(view->depth);
 

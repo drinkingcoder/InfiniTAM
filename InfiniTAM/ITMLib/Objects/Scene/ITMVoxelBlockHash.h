@@ -74,14 +74,14 @@ namespace ITMLib
 		int lastFreeExcessListId;
 
 		/** The actual data in the hash table. */
-		ORUtils::MemoryBlock<ITMHashEntry> *hashEntries;
+		ORUtils::MemoryManager<ITMHashEntry> *hashEntries;
 
 		/** Identifies which entries of the overflow
 		list are allocated. This is used if too
 		many hash collisions caused the buckets to
 		overflow.
 		*/
-		ORUtils::MemoryBlock<int> *excessAllocationList;
+		ORUtils::MemoryManager<int> *excessAllocationList;
 
 		MemoryDeviceType memoryType;
 
@@ -89,8 +89,8 @@ namespace ITMLib
 		ITMVoxelBlockHash(MemoryDeviceType memoryType)
 		{
 			this->memoryType = memoryType;
-			hashEntries = new ORUtils::MemoryBlock<ITMHashEntry>(noTotalEntries, memoryType);
-			excessAllocationList = new ORUtils::MemoryBlock<int>(SDF_EXCESS_LIST_SIZE, memoryType);
+			hashEntries = new ORUtils::MemoryManager<ITMHashEntry>(noTotalEntries, memoryType);
+			excessAllocationList = new ORUtils::MemoryManager<int>(SDF_EXCESS_LIST_SIZE, memoryType);
 		}
 
 		~ITMVoxelBlockHash(void)

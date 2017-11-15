@@ -5,7 +5,7 @@
 #ifndef __METALC__
 
 #include "../../Utils/ITMMath.h"
-#include "../../../ORUtils/MemoryBlock.h"
+#include "../../../ORUtils/MemoryManager.h"
 
 namespace ITMLib
 {
@@ -36,7 +36,7 @@ namespace ITMLib
 		struct IndexCache {};
 
 	private:
-		ORUtils::MemoryBlock<IndexData> *indexData;
+		ORUtils::MemoryManager<IndexData> *indexData;
 
 		MemoryDeviceType memoryType;
 
@@ -45,8 +45,8 @@ namespace ITMLib
 		{
 			this->memoryType = memoryType;
 
-			if (memoryType == MEMORYDEVICE_CUDA) indexData = new ORUtils::MemoryBlock<IndexData>(1, true, true);
-			else indexData = new ORUtils::MemoryBlock<IndexData>(1, true, false);
+			if (memoryType == MEMORYDEVICE_CUDA) indexData = new ORUtils::MemoryManager<IndexData>(1, true, true);
+			else indexData = new ORUtils::MemoryManager<IndexData>(1, true, false);
 
 			indexData->GetData(MEMORYDEVICE_CPU)[0] = IndexData();
 			indexData->UpdateDeviceFromHost();

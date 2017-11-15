@@ -14,7 +14,7 @@ void ITMLowLevelEngine_CPU::CopyImage(ITMUChar4Image *image_out, const ITMUChar4
 	Vector4u *dest = image_out->GetData(MEMORYDEVICE_CPU);
 	const Vector4u *src = image_in->GetData(MEMORYDEVICE_CPU);
 
-	memcpy(dest, src, image_in->dataSize * sizeof(Vector4u));
+	memcpy(dest, src, image_in->m_data_size * sizeof(Vector4u));
 }
 
 void ITMLowLevelEngine_CPU::CopyImage(ITMFloatImage *image_out, const ITMFloatImage *image_in) const
@@ -22,7 +22,7 @@ void ITMLowLevelEngine_CPU::CopyImage(ITMFloatImage *image_out, const ITMFloatIm
 	float *dest = image_out->GetData(MEMORYDEVICE_CPU);
 	const float *src = image_in->GetData(MEMORYDEVICE_CPU);
 
-	memcpy(dest, src, image_in->dataSize * sizeof(float));
+	memcpy(dest, src, image_in->m_data_size * sizeof(float));
 }
 
 void ITMLowLevelEngine_CPU::CopyImage(ITMFloat4Image *image_out, const ITMFloat4Image *image_in) const
@@ -30,7 +30,7 @@ void ITMLowLevelEngine_CPU::CopyImage(ITMFloat4Image *image_out, const ITMFloat4
 	Vector4f *dest = image_out->GetData(MEMORYDEVICE_CPU);
 	const Vector4f *src = image_in->GetData(MEMORYDEVICE_CPU);
 
-	memcpy(dest, src, image_in->dataSize * sizeof(Vector4f));
+	memcpy(dest, src, image_in->m_data_size * sizeof(Vector4f));
 }
 
 void ITMLowLevelEngine_CPU::ConvertColourToIntensity(ITMFloatImage *image_out, const ITMUChar4Image *image_in) const
@@ -50,7 +50,7 @@ void ITMLowLevelEngine_CPU::FilterIntensity(ITMFloatImage *image_out, const ITMF
 	Vector2i dims = image_in->noDims;
 
 	image_out->ChangeDims(dims);
-	image_out->Clear(0);
+	image_out->InitData(0);
 
 	const float *imageData_in = image_in->GetData(MEMORYDEVICE_CPU);
 	float *imageData_out = image_out->GetData(MEMORYDEVICE_CPU);
@@ -79,7 +79,7 @@ void ITMLowLevelEngine_CPU::FilterSubsample(ITMFloatImage *image_out, const ITMF
 	Vector2i newDims(image_in->noDims.x / 2, image_in->noDims.y / 2);
 
 	image_out->ChangeDims(newDims);
-	image_out->Clear();
+	image_out->InitData();
 
 	const float *imageData_in = image_in->GetData(MEMORYDEVICE_CPU);
 	float *imageData_out = image_out->GetData(MEMORYDEVICE_CPU);
@@ -148,7 +148,7 @@ void ITMLowLevelEngine_CPU::GradientXY(ITMFloat2Image *grad_out, const ITMFloatI
 {
 	Vector2i imgSize = image_in->noDims;
 	grad_out->ChangeDims(imgSize);
-	grad_out->Clear();
+	grad_out->InitData();
 
 	Vector2f *grad = grad_out->GetData(MEMORYDEVICE_CPU);
 	const float *image = image_in->GetData(MEMORYDEVICE_CPU);

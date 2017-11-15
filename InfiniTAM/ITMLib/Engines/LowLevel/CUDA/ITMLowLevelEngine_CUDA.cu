@@ -43,7 +43,7 @@ void ITMLowLevelEngine_CUDA::CopyImage(ITMUChar4Image *image_out, const ITMUChar
 	Vector4u *dest = image_out->GetData(MEMORYDEVICE_CUDA);
 	const Vector4u *src = image_in->GetData(MEMORYDEVICE_CUDA);
 
-	ORcudaSafeCall(cudaMemcpy(dest, src, image_in->dataSize * sizeof(Vector4u), cudaMemcpyDeviceToDevice));
+	ORcudaSafeCall(cudaMemcpy(dest, src, image_in->m_data_size * sizeof(Vector4u), cudaMemcpyDeviceToDevice));
 }
 
 void ITMLowLevelEngine_CUDA::CopyImage(ITMFloatImage *image_out, const ITMFloatImage *image_in) const
@@ -51,7 +51,7 @@ void ITMLowLevelEngine_CUDA::CopyImage(ITMFloatImage *image_out, const ITMFloatI
 	float *dest = image_out->GetData(MEMORYDEVICE_CUDA);
 	const float *src = image_in->GetData(MEMORYDEVICE_CUDA);
 
-	ORcudaSafeCall(cudaMemcpy(dest, src, image_in->dataSize * sizeof(float), cudaMemcpyDeviceToDevice));
+	ORcudaSafeCall(cudaMemcpy(dest, src, image_in->m_data_size * sizeof(float), cudaMemcpyDeviceToDevice));
 }
 
 void ITMLowLevelEngine_CUDA::CopyImage(ITMFloat4Image *image_out, const ITMFloat4Image *image_in) const
@@ -59,7 +59,7 @@ void ITMLowLevelEngine_CUDA::CopyImage(ITMFloat4Image *image_out, const ITMFloat
 	Vector4f *dest = image_out->GetData(MEMORYDEVICE_CUDA);
 	const Vector4f *src = image_in->GetData(MEMORYDEVICE_CUDA);
 
-	ORcudaSafeCall(cudaMemcpy(dest, src, image_in->dataSize * sizeof(Vector4f), cudaMemcpyDeviceToDevice));
+	ORcudaSafeCall(cudaMemcpy(dest, src, image_in->m_data_size * sizeof(Vector4f), cudaMemcpyDeviceToDevice));
 }
 
 void ITMLowLevelEngine_CUDA::ConvertColourToIntensity(ITMFloatImage *image_out, const ITMUChar4Image *image_in) const
@@ -82,7 +82,7 @@ void ITMLowLevelEngine_CUDA::FilterIntensity(ITMFloatImage *image_out, const ITM
 	Vector2i dims = image_in->noDims;
 
 	image_out->ChangeDims(dims);
-	image_out->Clear(0);
+	image_out->InitData(0);
 
 	const float *imageData_in = image_in->GetData(MEMORYDEVICE_CUDA);
 	float *imageData_out = image_out->GetData(MEMORYDEVICE_CUDA);
@@ -117,7 +117,7 @@ void ITMLowLevelEngine_CUDA::FilterSubsample(ITMFloatImage *image_out, const ITM
 	Vector2i newDims; newDims.x = image_in->noDims.x / 2; newDims.y = image_in->noDims.y / 2;
 
 	image_out->ChangeDims(newDims);
-	image_out->Clear(0);
+	image_out->InitData(0);
 
 	const float *imageData_in = image_in->GetData(MEMORYDEVICE_CUDA);
 	float *imageData_out = image_out->GetData(MEMORYDEVICE_CUDA);
@@ -201,7 +201,7 @@ void ITMLowLevelEngine_CUDA::GradientXY(ITMFloat2Image *grad_out, const ITMFloat
 {
 	Vector2i imgSize = image_in->noDims;
 	grad_out->ChangeDims(imgSize);
-	grad_out->Clear();
+	grad_out->InitData();
 
 	Vector2f *grad = grad_out->GetData(MEMORYDEVICE_CUDA);
 	const float *image = image_in->GetData(MEMORYDEVICE_CUDA);

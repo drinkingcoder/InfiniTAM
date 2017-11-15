@@ -132,7 +132,7 @@ void ITMVisualisationEngine_CUDA<TVoxel, TIndex>::CreateExpectedDepths(const ITM
 	Vector2f init;
 	//TODO : this could be improved a bit...
 	init.x = 0.2f; init.y = 3.0f;
-	memsetKernel<Vector2f>(minmaxData, init, renderState->renderingRangeImage->dataSize);
+	memsetKernel<Vector2f>(minmaxData, init, renderState->renderingRangeImage->m_data_size);
 }
 
 template<class TVoxel>
@@ -146,7 +146,7 @@ void ITMVisualisationEngine_CUDA<TVoxel, ITMVoxelBlockHash>::CreateExpectedDepth
 
 	Vector2f init;
 	init.x = FAR_AWAY; init.y = VERY_CLOSE;
-	memsetKernel<Vector2f>(minmaxData, init, renderState->renderingRangeImage->dataSize);
+	memsetKernel<Vector2f>(minmaxData, init, renderState->renderingRangeImage->m_data_size);
 
 	ITMRenderState_VH* renderState_vh = (ITMRenderState_VH*)renderState;
 
@@ -361,7 +361,7 @@ static void ForwardRender_common(const ITMScene<TVoxel, TIndex> *scene, const IT
 	const TVoxel *voxelData = scene->localVBA.GetVoxelBlocks();
 	const typename TIndex::IndexData *voxelIndex = scene->index.getIndexData();
 
-	renderState->forwardProjection->Clear();
+	renderState->forwardProjection->InitData();
 
 	dim3 blockSize, gridSize;
 

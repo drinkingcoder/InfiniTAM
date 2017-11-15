@@ -46,7 +46,7 @@ void ITMSurfelVisualisationEngine_CPU<TSurfel>::CreateICPMaps(const ITMSurfelSce
 {
   const Matrix4f& invT = trackingState->pose_d->GetM();
   Vector4f *normalsMap = trackingState->pointCloud->colours->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(renderState->GetIndexImage()->dataSize);
+  const int pixelCount = static_cast<int>(renderState->GetIndexImage()->m_data_size);
   Vector4f *pointsMap = trackingState->pointCloud->locations->GetData(MEMORYDEVICE_CPU);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
   const unsigned int *surfelIndexImage = renderState->GetIndexImage()->GetData(MEMORYDEVICE_CPU);
@@ -67,7 +67,7 @@ void ITMSurfelVisualisationEngine_CPU<TSurfel>::RenderDepthImage(const ITMSurfel
 {
   const Vector3f cameraPosition = pose->GetT();
   float *outputImagePtr = outputImage->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(outputImage->dataSize);
+  const int pixelCount = static_cast<int>(outputImage->m_data_size);
   const unsigned int *surfelIndexImagePtr = renderState->GetIndexImage()->GetData(MEMORYDEVICE_CPU);
   const TSurfel *surfels = scene->GetSurfels()->GetData(MEMORYDEVICE_CPU);
 
@@ -88,7 +88,7 @@ void ITMSurfelVisualisationEngine_CPU<TSurfel>::RenderImage(const ITMSurfelScene
   if(type == Base::RENDER_COLOUR && !TSurfel::hasColourInformation) type = Base::RENDER_LAMBERTIAN;
 
   Vector4u *outputImagePtr = outputImage->GetData(MEMORYDEVICE_CPU);
-  const int pixelCount = static_cast<int>(outputImage->dataSize);
+  const int pixelCount = static_cast<int>(outputImage->m_data_size);
   const ITMSurfelSceneParams& sceneParams = scene->GetParams();
   const unsigned int *surfelIndexImagePtr = renderState->GetIndexImage()->GetData(MEMORYDEVICE_CPU);
   const TSurfel *surfels = scene->GetSurfels()->GetData(MEMORYDEVICE_CPU);

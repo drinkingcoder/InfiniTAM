@@ -184,7 +184,7 @@
 		A6AC2AF01CBD333D000CC89D /* LexicalCast.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LexicalCast.h; sourceTree = "<group>"; };
 		A6AC2AF11CBD333D000CC89D /* MathUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathUtils.h; sourceTree = "<group>"; };
 		A6AC2AF21CBD333D000CC89D /* Matrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix.h; sourceTree = "<group>"; };
-		A6AC2AF31CBD333D000CC89D /* MemoryBlock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryBlock.h; sourceTree = "<group>"; };
+		A6AC2AF31CBD333D000CC89D /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryManager.h; sourceTree = "<group>"; };
 		A6AC2AF41CBD333D000CC89D /* MemoryBlockPersister.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemoryBlockPersister.h; sourceTree = "<group>"; };
 		A6AC2AF51CBD333D000CC89D /* MetalContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalContext.h; sourceTree = "<group>"; };
 		A6AC2AF61CBD333D000CC89D /* MetalContext.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MetalContext.mm; sourceTree = "<group>"; };
@@ -530,7 +530,7 @@
 				A6AC2AF01CBD333D000CC89D /* LexicalCast.h */,
 				A6AC2AF11CBD333D000CC89D /* MathUtils.h */,
 				A6AC2AF21CBD333D000CC89D /* Matrix.h */,
-				A6AC2AF31CBD333D000CC89D /* MemoryBlock.h */,
+				A6AC2AF31CBD333D000CC89D /* MemoryManager.h */,
 				A6AC2AF41CBD333D000CC89D /* MemoryBlockPersister.h */,
 				A6AC2AF51CBD333D000CC89D /* MetalContext.h */,
 				A6AC2AF61CBD333D000CC89D /* MetalContext.mm */,

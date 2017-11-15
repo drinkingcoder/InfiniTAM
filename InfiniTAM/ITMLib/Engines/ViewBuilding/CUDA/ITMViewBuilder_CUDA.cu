@@ -52,11 +52,11 @@ void ITMViewBuilder_CUDA::UpdateView(ITMView **view_ptr, ITMUChar4Image *rgbImag
 	if (storePreviousImage)
 	{
 		if (!view->rgb_prev) view->rgb_prev = new ITMUChar4Image(rgbImage->noDims, true, true);
-		else view->rgb_prev->SetFrom(view->rgb, MemoryBlock<Vector4u>::CUDA_TO_CUDA);
+		else view->rgb_prev->SetFrom(view->rgb, MemoryManager<Vector4u>::CUDA_TO_CUDA);
 	}	
 
-	view->rgb->SetFrom(rgbImage, MemoryBlock<Vector4u>::CPU_TO_CUDA);
-	this->shortImage->SetFrom(rawDepthImage, MemoryBlock<short>::CPU_TO_CUDA);
+	view->rgb->SetFrom(rgbImage, MemoryManager<Vector4u>::CPU_TO_CUDA);
+	this->shortImage->SetFrom(rawDepthImage, MemoryManager<short>::CPU_TO_CUDA);
 
 	switch (view->calib.disparityCalib.GetType())
 	{
@@ -78,7 +78,7 @@ void ITMViewBuilder_CUDA::UpdateView(ITMView **view_ptr, ITMUChar4Image *rgbImag
 		this->DepthFiltering(this->floatImage, view->depth);
 		this->DepthFiltering(view->depth, this->floatImage);
 		this->DepthFiltering(this->floatImage, view->depth);
-		view->depth->SetFrom(this->floatImage, MemoryBlock<float>::CUDA_TO_CUDA);
+		view->depth->SetFrom(this->floatImage, MemoryManager<float>::CUDA_TO_CUDA);
 	}
 
 	if (modelSensorNoise)

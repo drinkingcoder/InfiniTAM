@@ -25,17 +25,17 @@ namespace ORUtils
 		 * \param memoryDeviceType  The type of memory device on which to load the data.
 		 */
 		template <typename T>
-		static void LoadMemoryBlock(const std::string& filename, ORUtils::MemoryBlock<T>& block, MemoryDeviceType memoryDeviceType)
+		static void LoadMemoryBlock(const std::string& filename, ORUtils::MemoryManager<T>& block, MemoryDeviceType memoryDeviceType)
 		{
 			size_t blockSize = ReadBlockSize(filename);
 			if (memoryDeviceType == MEMORYDEVICE_CUDA)
 			{
 				// If we're loading into a block on the GPU, first try and read the data into a temporary block on the CPU.
-				ORUtils::MemoryBlock<T> cpuBlock(block.dataSize, MEMORYDEVICE_CPU);
+				ORUtils::MemoryManager<T> cpuBlock(block.m_data_size, MEMORYDEVICE_CPU);
 				ReadBlockData(filename, cpuBlock, blockSize);
 
 				// Then copy the data across to the GPU.
-				block.SetFrom(&cpuBlock, ORUtils::MemoryBlock<T>::CPU_TO_CUDA);
+				block.SetData(&cpuBlock, ORUtils::MemoryManager<T>::CPU_TO_CUDA);
 			}
 			else
 			{
@@ -52,10 +52,10 @@ namespace ORUtils
 		 * \return          The loaded memory block.
 		 */
 		template <typename T>
-		static ORUtils::MemoryBlock<T> *LoadMemoryBlock(const std::string& filename, ORUtils::MemoryBlock<T> *dummy = NULL)
+		static ORUtils::MemoryManager<T> *LoadMemoryBlock(const std::string& filename, ORUtils::MemoryManager<T> *dummy = NULL)
 		{
 			size_t blockSize = ReadBlockSize(filename);
-			ORUtils::MemoryBlock<T> *block = new ORUtils::MemoryBlock<T>(blockSize, MEMORYDEVICE_CPU);
+			ORUtils::MemoryManager<T> *block = new ORUtils::MemoryManager<T>(blockSize, MEMORYDEVICE_CPU);
 			ReadBlockData(filename, *block, blockSize);
 			return block;
 		}
@@ -84,7 +84,7 @@ namespace ORUtils
 		 * \param memoryDeviceType  The type of memory device from which to save the data.
 		 */
 		template <typename T>
-		static void SaveMemoryBlock(const std::string& filename, const ORUtils::MemoryBlock<T>& block, MemoryDeviceType memoryDeviceType)
+		static void SaveMemoryBlock(const std::string& filename, const ORUtils::MemoryManager<T>& block, MemoryDeviceType memoryDeviceType)
 		{
 			std::ofstream fs(filename.c_str(), std::ios::binary);
 			if (!fs) throw std::runtime_error("Could not open " + filename + " for writing");
@@ -92,8 +92,8 @@ namespace ORUtils
 			if (memoryDeviceType == MEMORYDEVICE_CUDA)
 			{
 				// If we are saving the memory block from the GPU, first make a CPU copy of it.
-				ORUtils::MemoryBlock<T> cpuBlock(block.dataSize, MEMORYDEVICE_CPU);
-				cpuBlock.SetFrom(&block, ORUtils::MemoryBlock<T>::CUDA_TO_CPU);
+				ORUtils::MemoryManager<T> cpuBlock(block.m_data_size, MEMORYDEVICE_CPU);
+				cpuBlock.SetData(&block, ORUtils::MemoryManager<T>::CUDA_TO_CPU);
 
 				// Then write the CPU copy to disk.
 				WriteBlock(fs, cpuBlock);
@@ -118,10 +118,10 @@ namespace ORUtils
 		 * \throws std::runtime_error If the read is unsuccessful.
 		 */
 		template <typename T>
-		static void ReadBlockData(std::istream& is, ORUtils::MemoryBlock<T>& block, size_t blockSize)
+		static void ReadBlockData(std::istream& is, ORUtils::MemoryManager<T>& block, size_t blockSize)
 		{
 			// Try and read the block's size.
-			if (block.dataSize != blockSize)
+			if (block.m_data_size != blockSize)
 			{
 				throw std::runtime_error("Could not read data into a memory block of the wrong size");
 			}
@@ -144,7 +144,7 @@ namespace ORUtils
 		 * \throws std::runtime_error If the read is unsuccessful.
 		 */
 		template <typename T>
-		static void ReadBlockData(const std::string& filename, ORUtils::MemoryBlock<T>& block, size_t blockSize)
+		static void ReadBlockData(const std::string& filename, ORUtils::MemoryManager<T>& block, size_t blockSize)
 		{
 			std::ifstream fs(filename.c_str(), std::ios::binary);
 			if (!fs) throw std::runtime_error("Could not open " + filename + " for reading");
@@ -182,16 +182,16 @@ namespace ORUtils
 		 * \throws std::runtime_error If the write is unsuccessful.
 		 */
 		template <typename T>
-		static void WriteBlock(std::ostream& os, const ORUtils::MemoryBlock<T>& block)
+		static void WriteBlock(std::ostream& os, const ORUtils::MemoryManager<T>& block)
 		{
 			// Try and write the block's size.
-			if (!os.write(reinterpret_cast<const char *>(&block.dataSize), sizeof(size_t)))
+			if (!os.write(reinterpret_cast<const char *>(&block.m_data_size), sizeof(size_t)))
 			{
 				throw std::runtime_error("Could not write memory block size");
 			}
 
 			// Try and write the block's data.
-			if (!os.write(reinterpret_cast<const char *>(block.GetData(MEMORYDEVICE_CPU)), block.dataSize * sizeof(T)))
+			if (!os.write(reinterpret_cast<const char *>(block.GetData(MEMORYDEVICE_CPU)), block.m_data_size * sizeof(T)))
 			{
 				throw std::runtime_error("Could not write memory block data");
 			}

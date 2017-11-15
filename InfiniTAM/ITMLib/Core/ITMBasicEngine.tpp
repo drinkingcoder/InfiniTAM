@@ -286,7 +286,7 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel,TIndex>::ProcessFrame(ITM
 			relocalisationCount = 10;
 
 			// Reset previous rgb frame since the rgb image is likely different than the one acquired when setting the keyframe
-			view->rgb_prev->Clear();
+			view->rgb_prev->InitData();
 
 			const FernRelocLib::PoseDatabase::PoseInScene & keyframe = relocaliser->RetrievePose(NN);
 			trackingState->pose_d->SetFrom(&keyframe.pose);
@@ -318,8 +318,8 @@ ITMTrackingState::TrackingResult ITMBasicEngine<TVoxel,TIndex>::ProcessFrame(ITM
 
 		if (addKeyframeIdx >= 0)
 		{
-			ORUtils::MemoryBlock<Vector4u>::MemoryCopyDirection memoryCopyDirection =
-				settings->deviceType == ITMLibSettings::DEVICE_CUDA ? ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CUDA : ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU;
+			ORUtils::MemoryManager<Vector4u>::MemoryCopyDirection memoryCopyDirection =
+				settings->deviceType == ITMLibSettings::DEVICE_CUDA ? ORUtils::MemoryManager<Vector4u>::CUDA_TO_CUDA : ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU;
 
 			kfRaycast->SetFrom(renderState_live->raycastImage, memoryCopyDirection);
 		}
@@ -352,15 +352,15 @@ void ITMBasicEngine<TVoxel,TIndex>::GetImage(ITMUChar4Image *out, GetImageType g
 {
 	if (view == NULL) return;
 
-	out->Clear();
+	out->InitData();
 
 	switch (getImageType)
 	{
 	case ITMBasicEngine::InfiniTAM_IMAGE_ORIGINAL_RGB:
 		out->ChangeDims(view->rgb->noDims);
 		if (settings->deviceType == ITMLibSettings::DEVICE_CUDA) 
-			out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CPU);
-		else out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+			out->SetFrom(view->rgb, ORUtils::MemoryManager<Vector4u>::CUDA_TO_CPU);
+		else out->SetFrom(view->rgb, ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU);
 		break;
 	case ITMBasicEngine::InfiniTAM_IMAGE_ORIGINAL_DEPTH:
 		out->ChangeDims(view->depth->noDims);
@@ -402,8 +402,8 @@ void ITMBasicEngine<TVoxel,TIndex>::GetImage(ITMUChar4Image *out, GetImageType g
 
 		out->ChangeDims(srcImage->noDims);
 		if (settings->deviceType == ITMLibSettings::DEVICE_CUDA)
-			out->SetFrom(srcImage, ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CPU);
-		else out->SetFrom(srcImage, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+			out->SetFrom(srcImage, ORUtils::MemoryManager<Vector4u>::CUDA_TO_CPU);
+		else out->SetFrom(srcImage, ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU);
 
 		break;
 		}
@@ -427,8 +427,8 @@ void ITMBasicEngine<TVoxel,TIndex>::GetImage(ITMUChar4Image *out, GetImageType g
 		visualisationEngine->RenderImage(scene, pose, intrinsics, renderState_freeview, renderState_freeview->raycastImage, type);
 
 		if (settings->deviceType == ITMLibSettings::DEVICE_CUDA)
-			out->SetFrom(renderState_freeview->raycastImage, ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CPU);
-		else out->SetFrom(renderState_freeview->raycastImage, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+			out->SetFrom(renderState_freeview->raycastImage, ORUtils::MemoryManager<Vector4u>::CUDA_TO_CPU);
+		else out->SetFrom(renderState_freeview->raycastImage, ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU);
 		break;
 	}
 	case ITMMainEngine::InfiniTAM_IMAGE_UNKNOWN:

@@ -230,7 +230,7 @@ ITMTrackingState::TrackingResult ITMBasicSurfelEngine<TSurfel>::ProcessFrame(ITM
 			relocalisationCount = 10;
 
 			// Reset previous rgb frame since the rgb image is likely different than the one acquired when setting the keyframe
-			view->rgb_prev->Clear();
+			view->rgb_prev->InitData();
 
 			const FernRelocLib::PoseDatabase::PoseInScene & keyframe = relocaliser->RetrievePose(NN);
 			trackingState->pose_d->SetFrom(&keyframe.pose);
@@ -262,8 +262,8 @@ ITMTrackingState::TrackingResult ITMBasicSurfelEngine<TSurfel>::ProcessFrame(ITM
 #if 0
 		if (addKeyframeIdx >= 0)
 		{
-			ORUtils::MemoryBlock<Vector4u>::MemoryCopyDirection memoryCopyDirection =
-				settings->deviceType == ITMLibSettings::DEVICE_CUDA ? ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CUDA : ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU;
+			ORUtils::MemoryManager<Vector4u>::MemoryCopyDirection memoryCopyDirection =
+				settings->deviceType == ITMLibSettings::DEVICE_CUDA ? ORUtils::MemoryManager<Vector4u>::CUDA_TO_CUDA : ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU;
 
 			kfRaycast->SetFrom(renderState_live->raycastImage, memoryCopyDirection);
 		}
@@ -317,15 +317,15 @@ void ITMBasicSurfelEngine<TSurfel>::GetImage(ITMUChar4Image *out, GetImageType g
 {
 	if (view == NULL) return;
 
-	out->Clear();
+	out->InitData();
 
 	switch (getImageType)
 	{
 	case ITMBasicSurfelEngine::InfiniTAM_IMAGE_ORIGINAL_RGB:
 		out->ChangeDims(view->rgb->noDims);
 		if (settings->deviceType == ITMLibSettings::DEVICE_CUDA) 
-			out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CUDA_TO_CPU);
-		else out->SetFrom(view->rgb, ORUtils::MemoryBlock<Vector4u>::CPU_TO_CPU);
+			out->SetFrom(view->rgb, ORUtils::MemoryManager<Vector4u>::CUDA_TO_CPU);
+		else out->SetFrom(view->rgb, ORUtils::MemoryManager<Vector4u>::CPU_TO_CPU);
 		break;
 	case ITMBasicSurfelEngine::InfiniTAM_IMAGE_ORIGINAL_DEPTH:
 		out->ChangeDims(view->depth->noDims);

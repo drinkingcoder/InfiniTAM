@@ -34,7 +34,7 @@ namespace ITMLib
     size_t m_surfelCount;
 
     /** The surfels in the scene. */
-    ORUtils::MemoryBlock<TSurfel> *m_surfelsMB;
+    ORUtils::MemoryManager<TSurfel> *m_surfelsMB;
 
     //#################### CONSTRUCTORS ####################
   public:
@@ -48,7 +48,7 @@ namespace ITMLib
       : m_memoryType(memoryType),
         m_params(params),
         m_surfelCount(0),
-        m_surfelsMB(new ORUtils::MemoryBlock<TSurfel>(MAX_SURFEL_COUNT, true, true))
+        m_surfelsMB(new ORUtils::MemoryManager<TSurfel>(MAX_SURFEL_COUNT, true, true))
     {}
 
     //#################### DESTRUCTOR ####################
@@ -77,7 +77,7 @@ namespace ITMLib
      */
     TSurfel *AllocateSurfels(size_t newSurfelCount)
     {
-      if(m_surfelCount + newSurfelCount > m_surfelsMB->dataSize) return NULL;
+      if(m_surfelCount + newSurfelCount > m_surfelsMB->m_data_size) return NULL;
       TSurfel *newSurfels = m_surfelsMB->GetData(m_memoryType) + m_surfelCount;
       m_surfelCount += newSurfelCount;
       return newSurfels;
@@ -121,7 +121,7 @@ namespace ITMLib
      *
      * \return  The memory block containing the surfels in the scene.
      */
-    ORUtils::MemoryBlock<TSurfel> *GetSurfels()
+    ORUtils::MemoryManager<TSurfel> *GetSurfels()
     {
       return m_surfelsMB;
     }
@@ -131,7 +131,7 @@ namespace ITMLib
      *
      * \return  The memory block containing the surfels in the scene.
      */
-    const ORUtils::MemoryBlock<TSurfel> *GetSurfels() const
+    const ORUtils::MemoryManager<TSurfel> *GetSurfels() const
     {
       return m_surfelsMB;
     }

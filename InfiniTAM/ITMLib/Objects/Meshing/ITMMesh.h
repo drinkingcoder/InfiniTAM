@@ -20,7 +20,7 @@ namespace ITMLib
 		static const uint noMaxTriangles_default = SDF_LOCAL_BLOCK_NUM * 32 * 16;
 		uint noMaxTriangles;
 
-		ORUtils::MemoryBlock<Triangle> *triangles;
+		ORUtils::MemoryManager<Triangle> *triangles;
 
 		explicit ITMMesh(MemoryDeviceType memoryType, uint maxTriangles = noMaxTriangles_default)
 		{
@@ -28,16 +28,16 @@ namespace ITMLib
 			this->noTotalTriangles = 0;
 			this->noMaxTriangles = maxTriangles;
 
-			triangles = new ORUtils::MemoryBlock<Triangle>(noMaxTriangles, memoryType);
+			triangles = new ORUtils::MemoryManager<Triangle>(noMaxTriangles, memoryType);
 		}
 
 		void WriteOBJ(const char *fileName)
 		{
-			ORUtils::MemoryBlock<Triangle> *cpu_triangles; bool shoulDelete = false;
+			ORUtils::MemoryManager<Triangle> *cpu_triangles; bool shoulDelete = false;
 			if (memoryType == MEMORYDEVICE_CUDA)
 			{
-				cpu_triangles = new ORUtils::MemoryBlock<Triangle>(noMaxTriangles, MEMORYDEVICE_CPU);
-				cpu_triangles->SetFrom(triangles, ORUtils::MemoryBlock<Triangle>::CUDA_TO_CPU);
+				cpu_triangles = new ORUtils::MemoryManager<Triangle>(noMaxTriangles, MEMORYDEVICE_CPU);
+				cpu_triangles->SetData(triangles, ORUtils::MemoryManager<Triangle>::CUDA_TO_CPU);
 				shoulDelete = true;
 			}
 			else cpu_triangles = triangles;
@@ -63,11 +63,11 @@ namespace ITMLib
 
 		void WriteSTL(const char *fileName)
 		{
-			ORUtils::MemoryBlock<Triangle> *cpu_triangles; bool shoulDelete = false;
+			ORUtils::MemoryManager<Triangle> *cpu_triangles; bool shoulDelete = false;
 			if (memoryType == MEMORYDEVICE_CUDA)
 			{
-				cpu_triangles = new ORUtils::MemoryBlock<Triangle>(noMaxTriangles, MEMORYDEVICE_CPU);
-				cpu_triangles->SetFrom(triangles, ORUtils::MemoryBlock<Triangle>::CUDA_TO_CPU);
+				cpu_triangles = new ORUtils::MemoryManager<Triangle>(noMaxTriangles, MEMORYDEVICE_CPU);
+				cpu_triangles->SetData(triangles, ORUtils::MemoryManager<Triangle>::CUDA_TO_CPU);
 				shoulDelete = true;
 			}
 			else cpu_triangles = triangles;

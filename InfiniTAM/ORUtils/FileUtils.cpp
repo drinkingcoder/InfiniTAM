@@ -295,9 +295,9 @@ void SaveImageToFile(const ORUtils::Image<ORUtils::Vector4<unsigned char> > * im
 
 void SaveImageToFile(const ORUtils::Image<short>* image, const char* fileName)
 {
-	short *data = (short*)malloc(sizeof(short) * image->dataSize);
+	short *data = (short*)malloc(sizeof(short) * image->m_data_size);
 	const short *dataSource = image->GetData(MEMORYDEVICE_CPU);
-	for (size_t i = 0; i < image->dataSize; i++) data[i] = (dataSource[i] << 8) | ((dataSource[i] >> 8) & 255);
+	for (size_t i = 0; i < image->m_data_size; i++) data[i] = (dataSource[i] << 8) | ((dataSource[i] >> 8) & 255);
 
 	FILE *f = fopen(fileName, "wb");
 	if (!pnm_writeheader(f, image->noDims.x, image->noDims.y, MONO_16u)) {
@@ -311,8 +311,8 @@ void SaveImageToFile(const ORUtils::Image<short>* image, const char* fileName)
 
 void SaveImageToFile(const ORUtils::Image<float>* image, const char* fileName)
 {
-	unsigned short *data = new unsigned short[image->dataSize];
-	for (size_t i = 0; i < image->dataSize; i++)
+	unsigned short *data = new unsigned short[image->m_data_size];
+	for (size_t i = 0; i < image->m_data_size; i++)
 	{
 		float localData = image->GetData(MEMORYDEVICE_CPU)[i];
 		data[i] = localData >= 0 ? (unsigned short)(localData * 1000.0f) : 0;

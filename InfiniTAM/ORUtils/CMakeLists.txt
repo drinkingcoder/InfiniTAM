@@ -36,7 +36,7 @@ KeyValueConfig.h
 LexicalCast.h
 MathUtils.h
 Matrix.h
-MemoryBlock.h
+MemoryManager.h
 MemoryBlockPersister.h
 MemoryDeviceType.h
 NVTimer.h
